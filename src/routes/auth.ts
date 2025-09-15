@@ -2,13 +2,59 @@ import { Router, Request, Response, NextFunction } from 'express'
 import { models } from '../db'
 import { getReturnError } from '../utils/routeHelpers'
 import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
+import jwt, { JwtPayload } from 'jsonwebtoken'
 import { getErrorMsgMissingParams } from '../utils/validation'
 import { ERROR_401_INVALID_CREDENTIALS, ERROR_500_UKNOWN, SUCCESS_200_LOGIN_SUCCESSFULL, SUCCESS_201_REGISTRATION_SUCCESSFULL } from '../constants/statusCodeMessages'
+import { UserModel } from '../db/user'
+import { ROLE } from '../utils/enums'
 
 const router = Router()
 
 const { User } = models
+
+type AuthedRequest = Request & { user?: UserModel }
+
+export const authMiddleware = async (_req: AuthedRequest, _res: Response, _next: NextFunction): Promise<void> => {
+  const token = _req.headers?.authorization?.split(' ')[1]
+
+  if (!token) {
+    _res.status(401).json({ error: 'No token provided'})
+    return
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY) as JwtPayload & { id: number }
+    const user = await User.findOne({ where: { id: decoded.id }})
+
+    if (!user) {
+      _res.status(401).json({ error: 'User not found' })
+      return
+    }
+
+    _req.user = user
+    _next()
+  } catch(e) {
+    console.error(`[ERROR]: middleware auth: ${e}`)
+    _res.status(403).json({ error: 'Invalid token' })
+    return
+  }
+}
+
+export const adminMiddleware = async (_req: AuthedRequest, _res: Response, _next: NextFunction): Promise<void> => {
+  if (!_req?.user) {
+    _res.status(401).json({ error: "User not authenticated yet" })
+    return
+  }
+
+  if (_req.user.role !== ROLE.ADMIN) {
+    _res.status(401).json({ error: "Unauthorized access, only admin cas access this" })
+    return
+  }
+
+  _next()
+}
+
+
 
 router.post('/register', async (_req: Request, _res: Response, _next: NextFunction): Promise<any> => {
   const reqBody = _req.body
