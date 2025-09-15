@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express'
 import { models } from '../db'
 import { getReturnError } from '../utils/routeHelpers'
-import { ERROR_400_UKNOWN } from '../constants/statusCodeMessages'
+import { ERROR_500_UKNOWN } from '../constants/statusCodeMessages'
 
 const router = Router()
 
@@ -27,7 +27,7 @@ router.get('/:id', async (_req: Request, _res: Response, _next: NextFunction): P
     })
   } catch(e) {
     console.error(`[ERROR] /users/${userId} : ${e})`)
-    getReturnError(_res, ERROR_400_UKNOWN)
+    getReturnError(_res, ERROR_500_UKNOWN)
   }
 })
 
