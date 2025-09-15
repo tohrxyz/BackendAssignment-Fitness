@@ -5,6 +5,8 @@ import { sequelize } from './db'
 import ProgramRouter from './routes/programs'
 import ExerciseRouter from './routes/exercises'
 import UserRouter from './routes/users'
+import AuthRouter from './routes/auth'
+require('dotenv').config()
 
 const app = express()
 
@@ -13,6 +15,7 @@ app.use(express.json())
 app.use('/programs', ProgramRouter())
 app.use('/exercises', ExerciseRouter())
 app.use('/users', UserRouter)
+app.use('/auth', AuthRouter)
 
 const httpServer = http.createServer(app)
 
