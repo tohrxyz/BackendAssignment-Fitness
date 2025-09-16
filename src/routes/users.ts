@@ -2,7 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express'
 import { models } from '../db'
 import { getReturnError } from '../utils/routeHelpers'
 import { ERROR_500_UKNOWN } from '../constants/statusCodeMessages'
-import { adminMiddleware, authMiddleware } from './auth'
+import { adminMiddleware, AuthedRequest, authMiddleware, userMiddleware } from './auth'
 import { getErrorMsgMissingParams } from '../utils/validation'
 
 const router = Router()
@@ -10,6 +10,24 @@ const router = Router()
 const {
   User
 } = models
+
+router.get('/profile-data/', [authMiddleware, userMiddleware], async (_req: AuthedRequest, res: Response, _next: NextFunction): Promise<any> => {
+  const { user } = _req
+
+  res.status(200).json({
+    message: "Your profile user data",
+    data: {
+      user: {
+        name: user.name,
+        surname: user.surname,
+        nickName: user.nickName,
+        email: user.email,
+        role: user.role,
+        age: user.age
+      }
+    }
+  })
+})
 
 router.get('/:id', [authMiddleware, adminMiddleware], async (_req: Request, _res: Response, _next: NextFunction): Promise<any> => {
   const userId = _req.params.id

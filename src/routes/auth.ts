@@ -12,7 +12,7 @@ const router = Router()
 
 const { User } = models
 
-type AuthedRequest = Request & { user?: UserModel }
+export type AuthedRequest = Request & { user?: UserModel }
 
 export const authMiddleware = async (_req: AuthedRequest, _res: Response, _next: NextFunction): Promise<void> => {
   const token = _req.headers?.authorization?.split(' ')[1]
@@ -41,6 +41,7 @@ export const authMiddleware = async (_req: AuthedRequest, _res: Response, _next:
 }
 
 export const adminMiddleware = async (_req: AuthedRequest, _res: Response, _next: NextFunction): Promise<void> => {
+  console.log("in admin middleware")
   if (!_req?.user) {
     _res.status(401).json({ error: "User not authenticated yet" })
     return
@@ -55,6 +56,19 @@ export const adminMiddleware = async (_req: AuthedRequest, _res: Response, _next
 }
 
 
+export const userMiddleware = async (_req: AuthedRequest, _res: Response, _next: NextFunction): Promise<void> => {
+  if (!_req?.user) {
+    _res.status(401).json({ error: "User not authenticated yet" })
+    return
+  }
+
+  if (_req.user.role !== ROLE.USER) {
+    _res.status(401).json({ error: "Unauthorized access, only user cas access this" })
+    return
+  }
+
+  _next()
+}
 
 router.post('/register', async (_req: Request, _res: Response, _next: NextFunction): Promise<any> => {
   const reqBody = _req.body
