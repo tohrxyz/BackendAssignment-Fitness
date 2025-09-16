@@ -2,6 +2,7 @@ import fs from 'fs'
 import { Sequelize } from 'sequelize'
 
 import defineExercise from './exercise'
+import defineCompletedExercise from './completedExercise'
 import defineProgram from './program'
 import defineUser  from './user'
 
@@ -12,13 +13,15 @@ const sequelize: Sequelize = new Sequelize('postgresql://localhost:5432/fitness_
 sequelize.authenticate().catch((e: any) => console.error(`Unable to connect to the database${e}.`))
 
 const Exercise = defineExercise(sequelize, 'exercise')
+const CompletedExercise = defineCompletedExercise(sequelize, 'completedExercise')
 const Program = defineProgram(sequelize, 'program')
 const User = defineUser(sequelize, 'user')
 
 const models = {
 	Exercise,
 	Program,
-	User
+	User,
+	CompletedExercise
 }
 type Models = typeof models
 
