@@ -13,7 +13,7 @@ const app = express()
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use('/programs', ProgramRouter())
-app.use('/exercises', ExerciseRouter())
+app.use('/exercises', ExerciseRouter)
 app.use('/users', UserRouter)
 app.use('/auth', AuthRouter)
 
