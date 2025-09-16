@@ -105,7 +105,7 @@ router.delete('/:id/', [authMiddleware, adminMiddleware], async (_req: Request, 
 
 router.put('/:id/', [authMiddleware, adminMiddleware], async (_req: Request, res: Response, _next: NextFunction): Promise<any> => {
   const { id } = _req.params
-  const { difficulty, name } = _req.body
+  const { difficulty, name, programID } = _req.body
 
   const invalidParamsOrNull = getErrorMsgMissingParams({
     id
@@ -127,6 +127,13 @@ router.put('/:id/', [authMiddleware, adminMiddleware], async (_req: Request, res
     dataToUpdate = {
       ...dataToUpdate,
       name
+    }
+  }
+
+  if (programID) {
+    dataToUpdate = {
+      ...dataToUpdate,
+      programID
     }
   }
 
