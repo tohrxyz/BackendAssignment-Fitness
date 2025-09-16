@@ -101,7 +101,14 @@ router.post('/register', async (_req: Request, _res: Response, _next: NextFuncti
       message: SUCCESS_201_REGISTRATION_SUCCESSFULL,
       data: {
         token,
-        user: JSON.stringify(newUser)
+        user: {
+          email: newUser.email,
+          name: newUser.name,
+          surname: newUser.surname,
+          nickName: newUser.nickName,
+          age: newUser.age,
+          role: newUser.role
+        }
       }
     })
   } catch(e) {
