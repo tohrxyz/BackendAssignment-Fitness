@@ -60,7 +60,15 @@ router.post('/register', async (_req: Request, _res: Response, _next: NextFuncti
   const reqBody = _req.body
   const { email, password, role, age, nickName, name, surname } = reqBody
 
-  const invalidVarsOrNull = getErrorMsgMissingParams(reqBody)
+  const invalidVarsOrNull = getErrorMsgMissingParams({
+    email,
+    password,
+    role,
+    age,
+    nickName,
+    name,
+    surname
+  })
   if (invalidVarsOrNull !== null) {
     return getReturnError(_res, invalidVarsOrNull)
   }
@@ -105,12 +113,11 @@ router.post('/register', async (_req: Request, _res: Response, _next: NextFuncti
 })
 
 router.post('/login', async(_req: Request, _res: Response, _next: NextFunction): Promise<any> => {
-  const invalidParamsOrNull = getErrorMsgMissingParams(_req.body)
+  const { email, password } = _req.body
+  const invalidParamsOrNull = getErrorMsgMissingParams({ email, password })
   if (invalidParamsOrNull !== null) {
     return getReturnError(_res, invalidParamsOrNull)
   }
-
-  const { email, password } = _req.body
 
   try {
     const user = await User.findOne({ where: { email }})
