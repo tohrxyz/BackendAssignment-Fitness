@@ -8,25 +8,42 @@ import { getErrorMsgMissingParams } from '../utils/validation'
 const router = Router()
 
 const {
-  User
+  User,
+  CompletedExercise
 } = models
 
 router.get('/profile-data/', [authMiddleware, userMiddleware], async (_req: AuthedRequest, res: Response, _next: NextFunction): Promise<any> => {
   const { user } = _req
 
-  res.status(200).json({
-    message: "Your profile user data",
-    data: {
-      user: {
-        name: user.name,
-        surname: user.surname,
-        nickName: user.nickName,
-        email: user.email,
-        role: user.role,
-        age: user.age
+  try {
+    const completedExercisesForUser = await CompletedExercise.findAll({
+      where: {
+        userId: user.id
+      },
+      attributes: ['duration', 'completedAt', 'exerciseId']
+    })
+    res.status(200).json({
+      message: "Your profile user data",
+      data: {
+        user: {
+          name: user.name,
+          surname: user.surname,
+          nickName: user.nickName,
+          email: user.email,
+          role: user.role,
+          age: user.age,
+          completed_exercises: completedExercisesForUser
+        }
       }
+    })
+    return
+    } catch(e) {
+        console.error(`[ERROR] /users/profile-data : ${e}`)
+        res.status(500).json({
+            error: ERROR_500_UKNOWN
+        })
     }
-  })
+
 })
 
 router.get('/all-users', [authMiddleware, userMiddleware], async (_req: AuthedRequest, res: Response, _next: NextFunction): Promise<any> => {
