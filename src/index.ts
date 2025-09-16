@@ -4,6 +4,7 @@ import express from 'express'
 import { sequelize } from './db'
 import ProgramRouter from './routes/programs'
 import ExerciseRouter from './routes/exercises'
+import CompletedExerciseRouter from './routes/completedExercises'
 import UserRouter from './routes/users'
 import AuthRouter from './routes/auth'
 require('dotenv').config()
@@ -14,6 +15,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use('/programs', ProgramRouter())
 app.use('/exercises', ExerciseRouter)
+app.use('/completed-exercises', CompletedExerciseRouter)
 app.use('/users', UserRouter)
 app.use('/auth', AuthRouter)
 
