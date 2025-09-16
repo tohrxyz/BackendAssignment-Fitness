@@ -29,8 +29,8 @@ router.get('/profile-data/', [authMiddleware, userMiddleware], async (_req: Auth
   })
 })
 
-router.get('/all-users/', [authMiddleware, userMiddleware], async (_req: AuthedRequest, res: Response, _next: NextFunction): Promise<any> => {
-  const limit = Number(_req?.params.limit) ? Number(_req?.params.limit) :  100
+router.get('/all-users', [authMiddleware, userMiddleware], async (_req: AuthedRequest, res: Response, _next: NextFunction): Promise<any> => {
+  const limit = Number(_req?.query.limit) ? Number(_req?.query.limit) :  100
   try {
     const users = await User.findAll({ attributes: ['id', 'nickName'], limit })
     res.status(200).json({
