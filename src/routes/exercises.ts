@@ -5,6 +5,7 @@ import { adminMiddleware, authMiddleware } from './auth'
 import { getErrorMsgMissingParams } from '../utils/validation'
 import { getReturnError } from '../utils/routeHelpers'
 import { ERROR_500_UKNOWN } from '../constants/statusCodeMessages'
+import { Op } from 'sequelize'
 
 const router = Router()
 
@@ -15,10 +16,21 @@ const {
 
 
 router.get('/', async (_req: Request, res: Response, _next: NextFunction): Promise<any> => {
+  const { limit: _limit, page: _page, search: _search } = _req.query
+  const limit = Number(_limit) ? Number(_limit) : 15
+  const page = Number(_page)  ? Number(_page) : 1
+  
 	const exercises = await Exercise.findAll({
 		include: [{
 			model: Program
-		}]
+		}],
+    limit,
+    offset: (page - 1) * limit,
+    where: _search ? {
+      name: {
+        [Op.like]: `%${_search}%`
+      }
+    } : undefined
 	})
 
 	return res.json({
